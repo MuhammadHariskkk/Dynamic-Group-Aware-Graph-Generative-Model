@@ -1,0 +1,8 @@
+scene:
+  name: hotel
+
+data:
+  scene: hotel
+
+grouping:
+  directional_coherence_threshold: 0.95

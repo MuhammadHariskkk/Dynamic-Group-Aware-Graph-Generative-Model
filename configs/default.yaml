@@ -1,0 +1,79 @@
+project:
+  name: group_aware_gmm
+  seed: 42
+  device: cuda
+
+data:
+  dataset_name: eth_ucy
+  raw_root: data/raw
+  processed_root: data/processed
+  scene: all
+  obs_len: 8
+  pred_len: 12
+  frame_rate_hz: 2.5
+  # Engineering assumption: ETH/UCY parsing and unit handling will be normalized during preprocessing.
+  coordinates_in_meters: true
+
+grouping:
+  distance_threshold_m: 1.0
+  velocity_diff_threshold_mps: 0.2
+  directional_coherence_threshold: 0.95
+  dynamic_per_timestep: true
+  deterministic_group_ids: true
+  partition_strategy: connected_components
+  # Engineering assumption: connected components over pairwise rule graph.
+
+graph:
+  gamma_spatial: 0.25
+  gamma_vel: 0.25
+  gamma_dir: 0.25
+  gamma_conflict: 0.25
+  softmax_rowwise: true
+
+model:
+  latent_dim: 5
+  gmm_num_modes: 3
+  mlp_dims: [16, 512, 8]
+  temporal_conv_layers: 7
+
+loss:
+  lambda_nll: 1.0
+  lambda_kl: 0.1
+
+training:
+  optimizer: adam
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  batch_size: 64
+  epochs: 500
+  grad_clip_norm: 1.0
+  early_stopping:
+    enabled: true
+    patience: 30
+    monitor: val_loss
+    mode: min
+  num_workers: 0
+  pin_memory: true
+
+evaluation:
+  deterministic_selection: highest_mode_probability
+  metrics: [ade, fde]
+  multimodal_metrics: [best_of_m_ade, best_of_m_fde]
+
+export:
+  primary_target: eth_ucy_visualizer_workflow
+  format: csv
+  supported_formats: [csv, npy, npz]
+  include_observed: true
+  include_ground_truth: true
+  include_multimodal: true
+  one_file_per_scene: true
+  one_file_per_run: true
+  deterministic_ordering: true
+
+paths:
+  outputs_root: outputs
+  checkpoints_dir: outputs/checkpoints
+  logs_dir: outputs/logs
+  metrics_dir: outputs/metrics
+  exports_dir: outputs/exports

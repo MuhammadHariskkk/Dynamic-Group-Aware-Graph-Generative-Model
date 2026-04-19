@@ -1,0 +1,8 @@
+scene:
+  name: eth
+
+data:
+  scene: eth
+
+grouping:
+  directional_coherence_threshold: 0.95

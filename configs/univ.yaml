@@ -1,0 +1,8 @@
+scene:
+  name: univ
+
+data:
+  scene: univ
+
+grouping:
+  directional_coherence_threshold: 0.95

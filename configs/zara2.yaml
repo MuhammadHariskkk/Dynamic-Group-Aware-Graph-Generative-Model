@@ -1,0 +1,8 @@
+scene:
+  name: zara2
+
+data:
+  scene: zara2
+
+grouping:
+  directional_coherence_threshold: 0.95
